@@ -310,53 +310,6 @@ backups/
 3. 增加超时时间 (`timeout`)
 4. 查看错误日志了解具体原因
 
-## 🛠️ 高级用法
-
-### Windows 计划任务
-
-如果不想长期运行程序，可以使用 Windows 计划任务：
-
-1. 打开"任务计划程序"
-2. 创建基本任务
-3. 设置触发器（时间）
-4. 操作选择"启动程序"
-5. 程序填写：`node`
-6. 参数填写：`"C:\path\to\qq-album-scheduler\src\index.js" --manual`
-
-### Linux/Mac Crontab
-
-```bash
-# 编辑 crontab
-crontab -e
-
-# 添加定时任务（每天凌晨2点执行）
-0 2 * * * cd /path/to/qq-album-scheduler && node src/index.js --manual
-```
-
-### Docker 部署
-
-创建 `Dockerfile`（示例）：
-
-```dockerfile
-FROM node:16-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --production
-COPY . .
-CMD ["node", "src/index.js"]
-```
-
-构建和运行：
-
-```bash
-docker build -t qq-album-scheduler .
-docker run -d --name qq-backup \
-  -v ./backups:/app/backups \
-  -v ./config.json:/app/config.json \
-  -v ./.env:/app/.env \
-  qq-album-scheduler
-```
-
 ## 📝 注意事项
 
 1. **Cookie 有效期**: QQ Cookie 会过期，建议定期更新
