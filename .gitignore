@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Configuration files with sensitive data
+.env
+config.json
+
+# Logs
+logs/
+*.log
+
+# Backup index files
+.backup_index.json
+
+# Downloaded backups (optional - comment out if you want to track backups in git)
+backups/
+downloads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

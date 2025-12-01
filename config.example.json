@@ -1,0 +1,41 @@
+{
+    "groups": [
+        {
+            "id": "123456789",
+            "name": "示例群组1",
+            "enabled": true
+        },
+        {
+            "id": "987654321",
+            "name": "示例群组2",
+            "enabled": true
+        }
+    ],
+    "schedule": {
+        "enabled": true,
+        "cron": "0 2 * * *",
+        "description": "每天凌晨2点执行备份"
+    },
+    "storage": {
+        "basePath": "./backups",
+        "organizeBy": "group",
+        "keepStructure": true
+    },
+    "download": {
+        "maxConcurrent": 3,
+        "retryAttempts": 3,
+        "retryDelay": 2000,
+        "timeout": 30000
+    },
+    "incremental": {
+        "enabled": true,
+        "checkHash": false,
+        "skipExisting": true
+    },
+    "logging": {
+        "level": "info",
+        "console": true,
+        "file": true,
+        "maxFiles": "14d"
+    }
+}

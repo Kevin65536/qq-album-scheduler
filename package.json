@@ -1,0 +1,31 @@
+{
+  "name": "qq-album-scheduler",
+  "version": "1.0.0",
+  "description": "Scheduled backup tool for QQ group albums",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "start:daemon": "node src/index.js --daemon",
+    "backup": "node src/index.js --manual",
+    "test": "node src/index.js --dry-run"
+  },
+  "keywords": [
+    "qq",
+    "album",
+    "backup",
+    "scheduler"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "node-cron": "^3.0.3",
+    "fs-extra": "^11.2.0",
+    "winston": "^3.15.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "crypto-js": "^4.2.0",
+    "commander": "^12.1.0",
+    "puppeteer": "^23.9.0"
+  }
+}
