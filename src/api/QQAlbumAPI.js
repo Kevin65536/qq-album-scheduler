@@ -83,6 +83,7 @@ class QQAlbumAPI {
     async getPhotoList(groupId, albumId, start = 0, num = 36) {
         const url = `https://h5.qzone.qq.com/groupphoto/inqq?g_tk=${this.auth.getGTk()}`;
 
+        // 构建 POST 数据（参考 QQGroupAlbumDownload 的实现）
         const postData = `qunId=${groupId}&albumId=${albumId}&uin=${this.auth.getUin()}&start=${start}&num=${num}&getCommentCnt=0&getMemberRole=0&hostUin=${this.auth.getUin()}&getalbum=0&platform=qzone&inCharset=utf-8&outCharset=utf-8&source=qzone&cmd=qunGetPhotoList&qunid=${groupId}&albumid=${albumId}&attach_info=start_count%3D${start}`;
 
         try {
@@ -91,14 +92,31 @@ class QQAlbumAPI {
                     ...this.auth.getHeaders(),
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                     'X-Requested-With': 'XMLHttpRequest',
+                    'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+                    'Referrer-Policy': 'strict-origin-when-cross-origin',
                 },
                 timeout: 30000,
             });
 
             const data = response.data;
 
-            if (data.code !== 0) {
-                throw new Error(`API错误: ${data.message || data.code}`);
+            // API 响应使用 ret/msg 而不是 code/message
+            const retCode = data.ret ?? data.code;
+            const retMsg = data.msg ?? data.message;
+
+            // 添加调试日志
+            this.logger.debug(`照片列表API响应:`, { 
+                ret: retCode, 
+                msg: retMsg,
+                hasData: !!data.data,
+                photoCount: data.data?.photolist?.length || 0
+            });
+
+            // 检查响应是否成功
+            if (retCode !== 0) {
+                // 记录完整的错误响应用于调试
+                this.logger.debug(`API错误响应详情:`, { response: JSON.stringify(data).substring(0, 500) });
+                throw new Error(`API错误: ${retMsg || retCode}`);
             }
 
             const photoList = (data.data?.photolist || []).map(photo => {

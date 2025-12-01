@@ -159,6 +159,17 @@ async function main() {
     // Initialize scheduler
     const scheduler = new BackupScheduler(config, auth, storage, logger);
 
+    // Check if we should do initial backup
+    const shouldBackupNow = needLogin || // First time login
+        config.schedule?.backupOnBoot === true; // Boot backup enabled
+
+    // In interactive mode, run boot backup immediately
+    if (shouldBackupNow && !options.dryRun && !options.daemon) {
+        logger.info('📦 执行初始备份...\n');
+        await scheduler.executeBackup();
+        logger.info('\n✅ 初始备份完成\n');
+    }
+
     // Handle graceful shutdown
     let shuttingDown = false;
     const shutdown = async (signal) => {
@@ -201,6 +212,19 @@ async function main() {
         logger.info('⏰ 定时备份已启动');
         logger.info(`📅 执行计划: ${config.schedule.description || config.schedule.cron}`);
         logger.info('💡 提示: 按 Ctrl+C 停止程序\n');
+
+        // In daemon mode, execute boot backup after scheduler starts
+        if (options.daemon && shouldBackupNow && !options.dryRun) {
+            logger.info('📦 执行开机备份...\n');
+            setImmediate(async () => {
+                try {
+                    await scheduler.executeBackup();
+                    logger.info('\n✅ 开机备份完成\n');
+                } catch (error) {
+                    logger.error(`❌ 开机备份失败: ${error.message}`);
+                }
+            });
+        }
 
         // Keep process alive
         if (options.daemon) {
