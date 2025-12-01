@@ -33,18 +33,29 @@ echo.
 echo 正在添加开机自启动任务...
 echo.
 
-REM 创建计划任务
-schtasks /create /tn "QQAlbumBackup" /tr "\"%STARTUP_SCRIPT%\"" /sc onstart /ru "%USERNAME%" /rl highest /f
+REM 创建计划任务，在用户登录后30秒运行（避免开机阶段无用户会话导致的 0x1 错误）
+REM 使用 ONLOGON 触发器可以在登录后立即拥有用户上下文，无需保存密码
+REM 如果需要纯开机（无登录）运行，可手动改用 SYSTEM 账户创建任务
+schtasks /create ^
+    /tn "QQAlbumBackup" ^
+    /tr "\"%STARTUP_SCRIPT%\"" ^
+    /sc onlogon ^
+    /ru "%USERNAME%" ^
+    /rl highest ^
+    /delay 0000:30 ^
+    /it ^
+    /f
 
 if %errorlevel% equ 0 (
     echo.
     echo ✓ 开机自启动已成功添加！
     echo.
     echo 说明:
-    echo - 程序将在每次开机时自动运行
+    echo - 程序将在每次登录后30秒自动运行（等待网络就绪与桌面加载）
+    echo - 如果需要在无人登录时运行，请改用 SYSTEM 账户手动创建计划任务
     echo - 运行模式：后台静默模式
     echo - 备份时机：开机后立即执行一次，然后按定时计划执行
-    echo - 查看日志：logs 文件夹
+    echo - 查看日志：logs 文件夹 和 startup.log
     echo.
 ) else (
     echo.
